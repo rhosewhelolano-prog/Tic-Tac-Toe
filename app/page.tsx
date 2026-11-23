@@ -2,13 +2,23 @@
 
 import { useState, useEffect } from "react";
 
+type Player = "🔥" | "❄️";
+type Cell = Player | null;
+type Board = Cell[];
+type GameMode = "multiplayer" | "single";
+
+type WinnerResult = {
+  winner: Player;
+  line: number[];
+};
+
 export default function Home() {
-  const [board, setBoard] = useState(Array(9).fill(null));
+  const [board, setBoard] = useState<Board>(Array<Cell>(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
-  const [gameMode, setGameMode] = useState("multiplayer");
+  const [gameMode, setGameMode] = useState<GameMode>("multiplayer");
   const [isAiThinking, setIsAiThinking] = useState(false);
 
-  const [scores, setScores] = useState({
+  const [scores, setScores] = useState<Record<Player, number>>({
     "🔥": 0,
     "❄️": 0,
   });
@@ -28,7 +38,7 @@ export default function Home() {
     }
   }, [winner]);
 
-  const makeComputerMove = (currentBoard) => {
+  const makeComputerMove = (currentBoard: Board): number | null => {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -94,8 +104,8 @@ export default function Home() {
 
     // Any remaining spot
     const emptySquares = currentBoard
-      .map((cell, index) => (cell === null ? index : null))
-      .filter((index) => index !== null);
+      .map((cell: Cell, index: number) => (cell === null ? index : null))
+      .filter((index): index is number => index !== null);
 
     if (emptySquares.length === 0) return null;
 
@@ -104,7 +114,7 @@ export default function Home() {
     ];
   };
 
-  const handleClick = (index) => {
+  const handleClick = (index: number) => {
     if (board[index] || winner || isAiThinking) return;
 
     const newBoard = [...board];
@@ -251,7 +261,7 @@ export default function Home() {
   );
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: Board): WinnerResult | null {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
